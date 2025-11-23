@@ -293,7 +293,7 @@ async function handlePokemonMessage(message) {
                 );
                 if (confirmMsg) {
                     const confirmButton = confirmMsg.components[0].components.find(c => c.label && c.label.toLowerCase() === 'confirm');
-                   .
+                   
                     await confirmMsg.clickButton(confirmButton.customId); 
                     console.log(`[${channelId}] ✅ 'Confirm' button for pausing incense pressed.`);
                     console.log(`=====================================================`);
