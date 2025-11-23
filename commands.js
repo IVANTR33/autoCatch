@@ -7,7 +7,7 @@ const { config, spamMessages, pokemonList, configPath, pokemonListPath } = requi
 const fs = require('fs');
 const path = require('path');
 
-// Definición de saveConfig, usando configPath desde ./config
+
 function saveConfig(currentConfig) {
     fs.writeFileSync(configPath, JSON.stringify(currentConfig, null, 2));
 }
@@ -24,12 +24,12 @@ function showList(page = 1) {
     const startIdx = (currentPage - 1) * config.settings.itemsPerPage;
     const endIdx = startIdx + config.settings.itemsPerPage;
     const pageItems = pokemonList.slice(startIdx, endIdx);
-    // ENGLISH: List title and pagination
+   
     let listStr = `**Pokémon List (Page ${currentPage}/${Math.ceil(pokemonList.length / config.settings.itemsPerPage)})**\n\n`;
     pageItems.forEach((pokemon, idx) => {
         listStr += `${startIdx + idx + 1}. ${pokemon}\n`;
     });
-    // ENGLISH: List summary
+   
     listStr += `\n**Total: ${pokemonList.length} | Delay: 1500ms**\n`;
     listStr += `**Use !next/!back or !next X/!back X to navigate**`;
     return listStr;
@@ -234,21 +234,21 @@ async function catchAllCommand(config, message, args) {
         return message.reply('❌ **ERROR:** Invalid mode. ' + getListHelpText(config));
     }
 }
-// --- END SERVER COMMAND AND UTILITY FUNCTIONS ---
+
 
 // --- FACTORY RESET FUNCTION ---
 async function factoryReset(message) {
     try {
-        // 1. Cargar la configuración actual para preservar datos críticos (nameBots, settings)
+        
         const currentConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
-        // 2. Definir los valores de restablecimiento (SOLO las que deben resetearse o ser marcadores)
+        
         const resetValues = {
-            // CREDENCIALES
-            "TOKEN": "YOU_TOKEN_HERE",       // <-- RESTABLECIDO
-            "OwnerIDs": ["YOU_ID_HERE"],     // <-- RESTABLECIDO
+           
+            "TOKEN": "YOU_TOKEN_HERE",      
+            "OwnerIDs": ["YOU_ID_HERE"],    
 
-            // CANALES Y MODOS
+         
             "errorChannel": "",
             "spamChannel": "",
             "logChannel": "",
@@ -259,14 +259,14 @@ async function factoryReset(message) {
             "paused": false
         };
 
-        // 3. Crear el nuevo objeto de configuración combinando los valores preservados y los reseteados
+        
         const finalResetConfig = {
-            // Preservar valores constantes/esenciales
-            "POKETWO_ID": currentConfig.POKETWO_ID || "716390085896962058", // Preservar o usar default de Pokétwo
-            "nameBots": currentConfig.nameBots || [], // <-- PRESERVADO
+            
+            "POKETWO_ID": currentConfig.POKETWO_ID || "716390085896962058", 
+            "nameBots": currentConfig.nameBots || [], 
 
             // Preservar el bloque settings completo
-            "settings": currentConfig.settings, // <-- PRESERVADO
+            "settings": currentConfig.settings,
 
             // Aplicar los valores de restablecimiento
             "TOKEN": resetValues.TOKEN,
@@ -283,13 +283,12 @@ async function factoryReset(message) {
 
         fs.writeFileSync(configPath, JSON.stringify(finalResetConfig, null, 2));
 
-        // NO se toca pokemon_list.json (Tu lista de Pokémon se mantiene)
+        
 
-        // 4. Informar y detener el bot
-        // **TEXTO DE RESPUESTA MODIFICADO AQUÍ**
+        
         await message.reply("⚠️ **❗ FACTORY CONFIG RESET COMPLETE!**\nTOKEN and OwnerIDs have been reset.\nThe bot is shutting down.\nPlease restart the program using \\`node index.js\\` to configure your new TOKEN and OwnerIDs.");
         console.log("[CRITICAL] Bot is shutting down due to !reset command.");
-        process.exit(0); // Detener el proceso
+        process.exit(0);
 
     } catch (e) {
         await message.reply(`❌ **ERROR al realizar el RESET de fábrica:** ${e.message}`);
@@ -313,7 +312,7 @@ async function handleCommand(message, prefix) {
             return catchAllCommand(config, message, args);
 
         case 'reset':
-            return factoryReset(message); // Llamar a la función de reset de fábrica
+            return factoryReset(message); 
 
         case 'error': {
             if (!args.length) {
@@ -351,10 +350,10 @@ async function handleCommand(message, prefix) {
             for (const name of namesToAdd) {
                 const formattedName = formatPokemonName(name);
 
-                // Omite si el nombre está vacío después del formato
+               
                 if (!formattedName) continue;
 
-                // Comprueba duplicados y los agrega a la lista principal si no están
+              
                 if (pokemonList.includes(formattedName)) {
                     alreadyInList.push(formattedName);
                     continue;
@@ -498,7 +497,7 @@ async function handleCommand(message, prefix) {
         case 'resume': {
             // 💡 CORRECCIÓN CLAVE: Usar globalState.paused para la comprobación real
             if (!globalState.paused) {
-                return message.reply('ℹ️ **El sistema ya estaba activo (No Pausado).** No se necesita reanudar.');
+               `return message.reply('ℹ️ **The system was already active (Not Paused).** No need to resume.');`
             }
 
             // Si sí estaba pausado, proceder a reanudar
@@ -508,7 +507,7 @@ async function handleCommand(message, prefix) {
 
             // Verificar si el canal de logs está configurado para evitar el 404
             if (!config.logChannel) {
-                return message.reply('✅ Sistema reanudado. **Advertencia:** El canal de log no está configurado, no se pudo reanudar el incienso. Use `!log #channel` para configurarlo.');
+               `return message.reply('✅ System resumed. **Warning:** The log channel is not configured, could not resume the incense. Use \`!log #channel\` to configure it.');`
             }
 
             const channel = await client.channels.fetch(config.logChannel).catch(e => {
@@ -517,8 +516,8 @@ async function handleCommand(message, prefix) {
             });
 
             if (channel) {
-                await message.reply('✅ **Sistema reanudado.** Los inciensos se reanudarán en el canal de logs.');
-                console.log("[INFO] El bot ha reanudado. Intentando reanudar incensos en el canal de log.");
+                `await message.reply('✅ **System resumed.** The incenses will resume in the logs channel.');`
+                `console.log("[INFO] The bot has resumed. Attempting to resume incenses in the log channel.");`
                 try {
                     await channel.send(`<@${config.POKETWO_ID}> inc r all`);
                     setTimeout(async () => {
@@ -539,8 +538,8 @@ async function handleCommand(message, prefix) {
                 }
             } else {
                 // Si la búsqueda del canal falló, pero sí estaba pausado:
-                await message.reply('✅ Sistema reanudado. **Advertencia:** El canal de log configurado no es accesible (ID inválido o canal eliminado), no se pudo reanudar el incienso. Use `!log #channel` para configurar uno válido.');
-                console.log(`[WARN] Canal de log configurado pero no accesible. No se pudo reanudar el incienso.`);
+               await message.reply('✅ System resumed. **Warning:** The configured log channel is not accessible (Invalid ID or channel deleted), could not resume the incense. Use `!log #channel` to configure a valid one.');
+               console.log(`[WARN] Log channel configured but not accessible. Could not resume the incense.`);
             }
 
             break;
