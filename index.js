@@ -42,11 +42,7 @@ function stopSpam() {
 const client = new Discord.Client({ checkUpdate: false });
 globalThis.client = client; 
 
-/**
- * Valida un token de Discord intentando iniciar sesión con un cliente temporal.
- * @param {string} token - El token a validar.
- * @returns {Promise<{isValid: boolean, userId: string | null}>} 
- */
+
 async function validateToken(token) {
     if (!token || token.length < 50 || token.includes(' ')) return { isValid: false, userId: null }; 
     
@@ -208,9 +204,7 @@ client.on("ready", async () => {
     
     const connectionStatus = globalState.paused ? 'PAUSED' : 'CONNECTED';
 
-    // *** CORRECCIÓN DE ALINEACIÓN FINAL ***
-    // 35 es el valor que garantiza que el texto encaje justo antes del borde derecho,
-    // corrigiendo el error de empujar a la derecha.
+    
     const statusLength = connectionStatus.length;
     const totalPadding = 25 - statusLength; 
 
