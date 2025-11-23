@@ -27,22 +27,18 @@ try {
     console.error("[ERROR] Could not load pokemon_aliases.json. Using empty object.", e.message);
 }
 
-/**
- * Normaliza un nombre de Pokémon para usarlo como clave en pokemonAliases.
- */
+
 function normalizeAliasKey(name) {
     return name
         .toLowerCase()
         .replace(/[^a-z0-9]/g, '');
 }
 
-/**
- * Selecciona un alias aleatorio para el nombre de Pokémon estándar.
- */
+
 function getCatchNameAlias(standardName) {
     const normalizedKey = normalizeAliasKey(standardName);
     
-    // 1. Intentar encontrar un alias en el objeto/mapa
+  
     if (pokemonAliases[normalizedKey] && Array.isArray(pokemonAliases[normalizedKey]) && pokemonAliases[normalizedKey].length > 0) {
         const alias = pickRandom(pokemonAliases[normalizedKey]);
         console.log(`[ALIAS] Selected alias '${alias}' for '${standardName}'.`);
@@ -50,7 +46,7 @@ function getCatchNameAlias(standardName) {
         return alias; 
     }
     
-    // 2. Fallback: Si no hay alias, usa el nombre estándar con la primera letra capitalizada.
+  
     if (standardName.length > 0) {
         const capitalizedName = standardName.charAt(0).toUpperCase() + standardName.slice(1);
         return capitalizedName;
@@ -58,9 +54,7 @@ function getCatchNameAlias(standardName) {
     return standardName;
 }
 
-/**
- * Función que define si la captura está permitida **EN ESTE SERVIDOR**.
- */
+
 function isCaptureAllowed(guildId, config) {
     if (!guildId) return false; 
     
@@ -91,15 +85,14 @@ function normalizeName(name) {
     return name
         .toLowerCase()
         .normalize('NFD')
-        .replace(/[\u0300-\u036f]/g, '') 
-        // Esta línea mantiene el guion común (-) pero elimina cualquier otro símbolo no alfanumérico.
+        .replace(/[\u0300-\u036f]/g, '')
         .replace(/[^a-z0-9\s.'-]/g, '') 
         .replace(/\s+/g, ' ')
         .trim();
 }
 
 function extractPokemonName(content) {
-    // Tu lógica original de extracción de nombres, que es más robusta para Name Bots.
+
     let firstLineContent = content.split('\n')[0];
 
     let cleanContent = firstLineContent
@@ -123,13 +116,12 @@ function extractPokemonName(content) {
 
     if (!cleanContent) return null;
 
-    // 💡 NUEVA REGLA CRÍTICA: Si se encuentra un guion largo (—), corta la cadena antes de él y elimínalo.
-    // Esto asegura que solo se capture el nombre, eliminando porcentajes o IVs que sigan al guion largo.
+   
     const longDashIndex = cleanContent.indexOf('—');
     if (longDashIndex !== -1) {
         cleanContent = cleanContent.substring(0, longDashIndex).trim();
     }
-    // FIN NUEVA REGLA
+   
 
     const patterns = [
         /The pokémon is (.+)/i,
@@ -238,7 +230,7 @@ async function sendLog(pokemonName, channelId, captureMessage) {
 
 async function handlePokemonMessage(message) {
     if (globalState.paused) return;
-    // Si el mensaje es de un bot, solo se procesa si es Pokétwo o un Name Bot (según tu config)
+   
     if (message.author.bot && message.author.id !== config.POKETWO_ID && !config.nameBots.includes(message.author.id)) return;
 
     // --- 1. VERIFICACIÓN DE PERMISO DE SERVIDOR (Server Mode) ---
@@ -274,7 +266,7 @@ async function handlePokemonMessage(message) {
         }
         
         const embed = msg.embeds[0];
-        // Revisa por título o descripción del embed
+        
         return (embed.title && embed.title.includes('Verification required')) || 
                (embed.description && embed.description.includes('are you human'));
     }
@@ -283,7 +275,7 @@ async function handlePokemonMessage(message) {
         console.log(`[${channelId}] ⚠️ CAPTCHA DETECTED. Bot paused.`);
         console.log(`=====================================================`);
         globalState.paused = true;
-        // 💡 CORRECCIÓN CLAVE: Sincronizar el estado persistente y guardarlo
+      
         config.paused = true; 
         saveConfig(config); 
         // ------------------------------------------------------------------
@@ -301,7 +293,7 @@ async function handlePokemonMessage(message) {
                 );
                 if (confirmMsg) {
                     const confirmButton = confirmMsg.components[0].components.find(c => c.label && c.label.toLowerCase() === 'confirm');
-                    // Necesitarás una implementación de clickButton si no está en tu selfbot-v13. Asumiendo que sí.
+                   .
                     await confirmMsg.clickButton(confirmButton.customId); 
                     console.log(`[${channelId}] ✅ 'Confirm' button for pausing incense pressed.`);
                     console.log(`=====================================================`);
@@ -312,7 +304,7 @@ async function handlePokemonMessage(message) {
             console.log(`=====================================================`);
         }
 
-        // Lógica para DM al owner
+    
         if (Array.isArray(config.OwnerIDs) && globalThis.client) {
             (async () => {
                 for (const ownerId of config.OwnerIDs) {
@@ -439,10 +431,10 @@ async function handlePokemonMessage(message) {
         return;
     }
 
-    // --- 6. RESPUESTA DE HINT DE POKETWO (Lógica original + Alias) ---
+  
     if (message.author.id === config.POKETWO_ID && message.content.includes("The pokémon is")) {
         if (state.pokemon) return;
-        // La versión original usaba esta firma de solveHint
+       
         const [pokemonName] = await solveHint(message); 
         if (!pokemonName) {
             console.log(`[${channelId}] ⚠️ Could not solve hint message.`);
