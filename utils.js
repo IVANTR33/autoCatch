@@ -1,7 +1,7 @@
 // utils.js
 const fs = require('fs');
 const path = require('path');
-const { configPath } = require('./config'); // Asegurarse de que configPath esté accesible o se defina aquí.
+const { configPath } = require('./config'); 
 
 
 async function reportError(errorMsg, client, config) {
